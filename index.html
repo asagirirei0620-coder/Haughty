@@ -1,1217 +1,323 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-
-  <meta name="theme-color" content="#171a21">
-
-  <!-- ブラウザのアイコン -->
-  <link rel="icon" type="image/png" href="icon.png">
-
-  <!-- iPad / iPhone ホーム画面アイコン -->
-  <link rel="apple-touch-icon" href="icon.png">
-
-  <!-- PWA -->
-  <link rel="manifest" href="manifest.json">
-
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-title" content="NOVELINK">
-  <meta name="apple-mobile-web-app-status-bar-style"
-        content="black-translucent">
-
-  <title>NOVELINK</title>
-
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    html,
-    body {
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      font-family:
-        -apple-system,
-        BlinkMacSystemFont,
-        "Helvetica Neue",
-        "Noto Sans JP",
-        sans-serif;
-      background: #171a21;
-      color: #fff;
-    }
-
-    button,
-    input,
-    textarea {
-      font: inherit;
-    }
-
-    button {
-      border: none;
-      cursor: pointer;
-    }
-
-    /* =========================
-       SPLASH
-    ========================= */
-
-    #splash {
-      position: fixed;
-      inset: 0;
-      z-index: 9999;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #171a21;
-      transition:
-        opacity .45s ease,
-        visibility .45s ease;
-    }
-
-    #splash.hide {
-      opacity: 0;
-      visibility: hidden;
-    }
-
-    .splash-inner {
-      text-align: center;
-      animation: splashIn .7s ease;
-    }
-
-    .splash-logo {
-      width: 92px;
-      height: 92px;
-      margin: auto;
-      border-radius: 24px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(
-        145deg,
-        #6278ed,
-        #4054c4
-      );
-      box-shadow:
-        0 20px 50px rgba(0,0,0,.35);
-    }
-
-    .splash-logo span {
-      font-size: 55px;
-      font-weight: 800;
-      color: white;
-    }
-
-    .splash-title {
-      margin-top: 22px;
-      font-size: 25px;
-      font-weight: 700;
-      letter-spacing: .12em;
-    }
-
-    .splash-sub {
-      margin-top: 8px;
-      font-size: 12px;
-      color: #8e96a8;
-      letter-spacing: .12em;
-    }
-
-    @keyframes splashIn {
-      from {
-        opacity: 0;
-        transform: scale(.9);
-      }
-
-      to {
-        opacity: 1;
-        transform: scale(1);
-      }
-    }
-
-    /* =========================
-       APP
-    ========================= */
-
-    #app {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .header {
-      height: 64px;
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding:
-        0 18px
-        env(safe-area-inset-right)
-        0 env(safe-area-inset-left);
-      background: #1d212b;
-      border-bottom: 1px solid #2c3240;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .brand-logo {
-      width: 34px;
-      height: 34px;
-      border-radius: 9px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #5267d9;
-      font-weight: 800;
-    }
-
-    .brand-name {
-      font-size: 18px;
-      font-weight: 700;
-      letter-spacing: .08em;
-    }
-
-    .header-actions {
-      display: flex;
-      gap: 7px;
-    }
-
-    .icon-btn {
-      width: 38px;
-      height: 38px;
-      border-radius: 10px;
-      color: #bfc5d2;
-      background: #282d38;
-    }
-
-    .icon-btn:hover {
-      background: #333948;
-    }
-
-    /* =========================
-       CONTENT
-    ========================= */
-
-    .content {
-      flex: 1;
-      min-height: 0;
-      overflow-y: auto;
-      padding:
-        25px
-        max(25px, env(safe-area-inset-right))
-        40px
-        max(25px, env(safe-area-inset-left));
-    }
-
-    .page {
-      display: none;
-      max-width: 1100px;
-      margin: auto;
-    }
-
-    .page.active {
-      display: block;
-    }
-
-    .page-title {
-      font-size: 28px;
-      font-weight: 750;
-      margin-bottom: 7px;
-    }
-
-    .page-description {
-      color: #8991a1;
-      font-size: 14px;
-      margin-bottom: 25px;
-    }
-
-    /* =========================
-       HOME
-    ========================= */
-
-    .stats {
-      display: grid;
-      grid-template-columns:
-        repeat(3, 1fr);
-      gap: 12px;
-      margin-bottom: 26px;
-    }
-
-    .stat {
-      background: #202530;
-      border: 1px solid #2c3240;
-      border-radius: 15px;
-      padding: 18px;
-    }
-
-    .stat-label {
-      font-size: 12px;
-      color: #858d9e;
-    }
-
-    .stat-value {
-      margin-top: 8px;
-      font-size: 25px;
-      font-weight: 700;
-    }
-
-    .works-grid {
-      display: grid;
-      grid-template-columns:
-        repeat(auto-fill, minmax(260px, 1fr));
-      gap: 14px;
-    }
-
-    .work-card {
-      padding: 20px;
-      border-radius: 16px;
-      border: 1px solid #303644;
-      background: #202530;
-      transition:
-        transform .15s ease,
-        border-color .15s ease;
-      cursor: pointer;
-    }
-
-    .work-card:hover {
-      transform: translateY(-2px);
-      border-color: #5267d9;
-    }
-
-    .work-card-title {
-      font-size: 17px;
-      font-weight: 700;
-    }
-
-    .work-card-meta {
-      margin-top: 8px;
-      font-size: 12px;
-      color: #858d9e;
-    }
-
-    .progress {
-      height: 5px;
-      margin-top: 16px;
-      overflow: hidden;
-      border-radius: 99px;
-      background: #303542;
-    }
-
-    .progress span {
-      display: block;
-      width: 48%;
-      height: 100%;
-      background: #5267d9;
-      border-radius: inherit;
-    }
-
-    /* =========================
-       EDITOR
-    ========================= */
-
-    .editor-wrap {
-      display: grid;
-      grid-template-columns: 1fr 280px;
-      gap: 16px;
-      min-height: calc(100vh - 150px);
-    }
-
-    .editor-panel,
-    .side-panel {
-      background: #202530;
-      border: 1px solid #303644;
-      border-radius: 16px;
-    }
-
-    .editor-panel {
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-
-    .editor-toolbar {
-      height: 50px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 0 10px;
-      border-bottom: 1px solid #303644;
-      background: #1d212b;
-    }
-
-    .tool-btn {
-      min-width: 35px;
-      height: 34px;
-      padding: 0 9px;
-      border-radius: 8px;
-      background: #282d38;
-      color: #c8ced9;
-    }
-
-    .tool-btn:hover {
-      background: #363c4a;
-    }
-
-    #editor {
-      flex: 1;
-      width: 100%;
-      min-height: 500px;
-      resize: none;
-      border: none;
-      outline: none;
-      padding: 25px;
-      background: #202530;
-      color: #e9ecf2;
-      font-size: 16px;
-      line-height: 2;
-    }
-
-    .editor-footer {
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 15px;
-      border-top: 1px solid #303644;
-      color: #7f8798;
-      font-size: 11px;
-    }
-
-    /* =========================
-       WARNING
-    ========================= */
-
-    .warning-box {
-      padding: 15px;
-    }
-
-    .warning-title {
-      font-size: 13px;
-      font-weight: 700;
-      margin-bottom: 12px;
-    }
-
-    .warning {
-      margin-bottom: 8px;
-      padding: 10px;
-      border-left: 3px solid #e34b5f;
-      border-radius: 7px;
-      background: rgba(227,75,95,.08);
-      color: #ff7181;
-      font-size: 12px;
-      cursor: pointer;
-    }
-
-    .warning:hover {
-      background: rgba(227,75,95,.15);
-    }
-
-    /* =========================
-       BOTTOM NAV
-    ========================= */
-
-    .bottom-nav {
-      height: 64px;
-      flex-shrink: 0;
-      display: flex;
-      justify-content: center;
-      gap: 4px;
-      padding:
-        6px
-        max(10px, env(safe-area-inset-right))
-        calc(6px + env(safe-area-inset-bottom))
-        max(10px, env(safe-area-inset-left));
-      background: #1d212b;
-      border-top: 1px solid #2c3240;
-    }
-
-    .nav-btn {
-      min-width: 90px;
-      border-radius: 10px;
-      background: transparent;
-      color: #777f90;
-    }
-
-    .nav-btn.active {
-      background: #2b3140;
-      color: #fff;
-    }
-
-    /* =========================
-       MODAL
-    ========================= */
-
-    .modal {
-      position: fixed;
-      inset: 0;
-      z-index: 5000;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      background: rgba(0,0,0,.65);
-    }
-
-    .modal.show {
-      display: flex;
-    }
-
-    .modal-box {
-      width: min(500px, 100%);
-      max-height: 85vh;
-      overflow-y: auto;
-      padding: 24px;
-      border-radius: 17px;
-      background: #202530;
-      border: 1px solid #353b49;
-      box-shadow: 0 30px 100px rgba(0,0,0,.5);
-    }
-
-    .modal-title {
-      font-size: 20px;
-      font-weight: 700;
-      margin-bottom: 14px;
-    }
-
-    .modal-text {
-      color: #aab1be;
-      font-size: 14px;
-      line-height: 1.8;
-    }
-
-    .modal-close {
-      margin-top: 20px;
-      width: 100%;
-      height: 42px;
-      border-radius: 9px;
-      background: #5267d9;
-      color: white;
-    }
-
-    /* =========================
-       RESPONSIVE
-    ========================= */
-
-    @media (max-width: 750px) {
-      .content {
-        padding: 18px;
-      }
-
-      .stats {
-        grid-template-columns: 1fr;
-      }
-
-      .editor-wrap {
-        grid-template-columns: 1fr;
-      }
-
-      .side-panel {
-        display: none;
-      }
-
-      .nav-btn {
-        min-width: 70px;
-      }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ガチAI頭脳搭載・育成型相棒AI (Ver 4.0)</title>
+<style>
+  body { font-family: sans-serif; background: #0f111a; color: #f0f0f0; margin: 0; display: flex; flex-direction: column; height: 100vh; }
+  header { background: #1a1c29; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #2a2e43; flex-wrap: wrap; gap: 8px; }
+  h1 { font-size: 16px; margin: 0; display: flex; align-items: center; gap: 8px; }
+  .status-badge { background: #3a86ff; font-size: 12px; padding: 3px 8px; border-radius: 10px; }
+  .header-btns { display: flex; gap: 6px; }
+  button { background: #3a86ff; color: white; border: none; padding: 6px 10px; border-radius: 6px; font-size: 13px; cursor: pointer; }
+  button.danger { background: #e63946; }
+  button.secondary { background: #4a4e69; }
+  button.api-btn { background: #2a9d8f; }
+  #chat { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+  .msg { max-width: 82%; padding: 10px 14px; border-radius: 12px; line-height: 1.6; word-wrap: break-word; white-space: pre-wrap; }
+  .user { background: #3a86ff; align-self: flex-end; }
+  .ai { background: #1f2233; align-self: flex-start; border: 1px solid #2a2e43; }
+  #input-area { display: flex; padding: 12px; background: #1a1c29; gap: 8px; border-top: 1px solid #2a2e43; }
+  input[type="text"], input[type="password"] { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #3a3f5c; background: #12141f; color: white; font-size: 16px; }
+  
+  .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); padding: 20px; overflow-y: auto; z-index: 100; }
+  .modal-content { background: #1a1c29; padding: 20px; border-radius: 12px; max-width: 500px; margin: 30px auto; border: 1px solid #2a2e43; }
+  .mem-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #2a2e43; }
+  .persona-options { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+  .persona-btn { text-align: left; padding: 10px; background: #25283d; border: 1px solid #3a3f5c; border-radius: 8px; color: white; cursor: pointer; }
+  .persona-btn:hover { background: #3a86ff; }
+</style>
 </head>
-
 <body>
 
-  <!-- SPLASH -->
-  <div id="splash">
-    <div class="splash-inner">
-      <div class="splash-logo">
-        <span>N</span>
-      </div>
+<header>
+  <h1>
+    🧠 相棒AI 
+    <span class="status-badge" id="status-display">Lv.1</span>
+  </h1>
+  <div class="header-btns">
+    <button class="api-btn" onclick="openApiModal()">🔑 APIキー設定</button>
+    <button class="secondary" onclick="openPersona()">性格</button>
+    <button onclick="openMemory()">記憶一覧</button>
+  </div>
+</header>
 
-      <div class="splash-title">
-        NOVELINK
-      </div>
+<div id="chat"></div>
 
-      <div class="splash-sub">
-        WRITE YOUR STORY
-      </div>
+<div id="input-area">
+  <input type="text" id="userInput" placeholder="何でも話しかけてみて！（〇〇は△△だよ、と教えると記憶するよ）">
+  <button onclick="sendMessage()">送信</button>
+</div>
+
+<!-- APIキー設定モーダル -->
+<div id="api-modal" class="modal">
+  <div class="modal-content">
+    <h2>🔑 Gemini APIキーの設定</h2>
+    <p style="font-size:13px; color:#a0a4b8; line-height:1.5;">
+      Google AI Studio で取得した無料の APIキー を貼り付けてください。<br>
+      ※キーはこのiPadのブラウザ内にのみ保存され、外部には公開されません。
+    </p>
+    <input type="password" id="apiKeyInput" placeholder="AIzaSy..." style="width:100%; box-sizing:border-box; margin-bottom:12px;">
+    <button onclick="saveApiKey()" style="width:100%; margin-bottom:8px;">保存して接続する</button>
+    <button class="secondary" onclick="closeModal('api-modal')" style="width:100%;">閉じる</button>
+  </div>
+</div>
+
+<!-- 記憶管理モーダル -->
+<div id="memory-modal" class="modal">
+  <div class="modal-content">
+    <h2>🧠 永続記憶リスト</h2>
+    <p style="font-size:12px; color:#a0a4b8;">ここで覚えていることは、毎回の会話でAIの頭脳に自動的に共有されます。</p>
+    <div id="memory-list" style="max-height: 300px; overflow-y: auto;"></div>
+    <br>
+    <button onclick="closeModal('memory-modal')" style="width:100%;">閉じる</button>
+  </div>
+</div>
+
+<!-- 性格選択モーダル -->
+<div id="persona-modal" class="modal">
+  <div class="modal-content">
+    <h2>🎭 相棒の性格・口調を選ぶ</h2>
+    <div class="persona-options">
+      <button class="persona-btn" onclick="changePersona('bro')">🔥 熱血・相棒系（頼りがいのある親友）</button>
+      <button class="persona-btn" onclick="changePersona('tsundere')">⚡ ツンデレ系（素直になれないけど面倒見がいい）</button>
+      <button class="persona-btn" onclick="changePersona('butler')">☕ 丁寧・執事系（知的で礼儀正しいサポート役）</button>
+      <button class="persona-btn" onclick="changePersona('ai')">🤖 クールAI系（論理的でスタイリッシュな知能体）</button>
     </div>
+    <br>
+    <button class="secondary" onclick="closeModal('persona-modal')" style="width:100%;">キャンセル</button>
   </div>
-
-  <!-- APP -->
-  <div id="app">
-
-    <header class="header">
-
-      <div class="brand">
-        <div class="brand-logo">N</div>
-        <div class="brand-name">NOVELINK</div>
-      </div>
-
-      <div class="header-actions">
-        <button
-          class="icon-btn"
-          onclick="showShortcutHelp()">
-          ?
-        </button>
-
-        <button
-          class="icon-btn"
-          onclick="showSettings()">
-          ⚙
-        </button>
-      </div>
-
-    </header>
-
-    <main class="content">
-
-      <!-- HOME -->
-      <section
-        id="home"
-        class="page active">
-
-        <h1 class="page-title">
-          作品
-        </h1>
-
-        <p class="page-description">
-          あなたの物語を、ここから。
-        </p>
-
-        <div class="stats">
-
-          <div class="stat">
-            <div class="stat-label">
-              作品数
-            </div>
-
-            <div class="stat-value">
-              3
-            </div>
-          </div>
-
-          <div class="stat">
-            <div class="stat-label">
-              総文字数
-            </div>
-
-            <div
-              class="stat-value"
-              id="totalChars">
-              12,480
-            </div>
-          </div>
-
-          <div class="stat">
-            <div class="stat-label">
-              今日の文字数
-            </div>
-
-            <div
-              class="stat-value"
-              id="todayChars">
-              0
-            </div>
-          </div>
-
-        </div>
-
-        <div class="works-grid">
-
-          <article
-            class="work-card"
-            onclick="openEditor()">
-
-            <div class="work-card-title">
-              午前0時、僕らの名前が消える
-            </div>
-
-            <div class="work-card-meta">
-              最終編集：今日
-            </div>
-
-            <div class="progress">
-              <span></span>
-            </div>
-
-          </article>
-
-          <article class="work-card">
-
-            <div class="work-card-title">
-              新しい物語
-            </div>
-
-            <div class="work-card-meta">
-              まだ本文がありません
-            </div>
-
-            <div class="progress">
-              <span style="width:0"></span>
-            </div>
-
-          </article>
-
-          <article class="work-card">
-
-            <div class="work-card-title">
-              新規作品
-            </div>
-
-            <div class="work-card-meta">
-              作成する
-            </div>
-
-            <div class="progress">
-              <span style="width:0"></span>
-            </div>
-
-          </article>
-
-        </div>
-
-      </section>
-
-
-      <!-- EDITOR -->
-      <section
-        id="editorPage"
-        class="page">
-
-        <h1 class="page-title">
-          執筆
-        </h1>
-
-        <p class="page-description">
-          午前0時、僕らの名前が消える
-        </p>
-
-        <div class="editor-wrap">
-
-          <div class="editor-panel">
-
-            <div class="editor-toolbar">
-
-              <button
-                class="tool-btn"
-                onclick="insertText('「」')">
-                「」
-              </button>
-
-              <button
-                class="tool-btn"
-                onclick="insertText('『』')">
-                『』
-              </button>
-
-              <button
-                class="tool-btn"
-                onclick="insertText('――')">
-                ――
-              </button>
-
-              <button
-                class="tool-btn"
-                onclick="insertText('……')">
-                ……
-              </button>
-
-              <button
-                class="tool-btn"
-                onclick="saveText()">
-                保存
-              </button>
-
-            </div>
-
-            <textarea
-              id="editor"
-              spellcheck="false"
-              placeholder="ここから物語を書き始める……"></textarea>
-
-            <div class="editor-footer">
-
-              <span id="saveStatus">
-                未保存
-              </span>
-
-              <span id="charCount">
-                0文字
-              </span>
-
-            </div>
-
-          </div>
-
-
-          <aside class="side-panel">
-
-            <div class="warning-box">
-
-              <div class="warning-title">
-                矛盾チェック
-              </div>
-
-              <div
-                class="warning"
-                onclick="showContradiction(
-                  '時間設定の矛盾'
-                )">
-                時間設定の矛盾
-              </div>
-
-              <div
-                class="warning"
-                onclick="showContradiction(
-                  '人物設定の矛盾'
-                )">
-                人物設定の矛盾
-              </div>
-
-              <div
-                class="warning"
-                onclick="showContradiction(
-                  '場所設定の矛盾'
-                )">
-                場所設定の矛盾
-              </div>
-
-            </div>
-
-          </aside>
-
-        </div>
-
-      </section>
-
-
-      <!-- CHARACTERS -->
-      <section
-        id="characters"
-        class="page">
-
-        <h1 class="page-title">
-          登場人物
-        </h1>
-
-        <p class="page-description">
-          物語に登場する人物を管理します。
-        </p>
-
-        <div class="works-grid">
-
-          <article class="work-card">
-
-            <div class="work-card-title">
-              桐谷 直人
-            </div>
-
-            <div class="work-card-meta">
-              主人公
-            </div>
-
-          </article>
-
-          <article class="work-card">
-
-            <div class="work-card-title">
-              神谷 蓮
-            </div>
-
-            <div class="work-card-meta">
-              主要人物
-            </div>
-
-          </article>
-
-        </div>
-
-      </section>
-
-    </main>
-
-
-    <!-- NAV -->
-    <nav class="bottom-nav">
-
-      <button
-        class="nav-btn active"
-        onclick="changePage('home', this)">
-        作品
-      </button>
-
-      <button
-        class="nav-btn"
-        onclick="changePage('editorPage', this)">
-        執筆
-      </button>
-
-      <button
-        class="nav-btn"
-        onclick="changePage('characters', this)">
-        人物
-      </button>
-
-    </nav>
-
-  </div>
-
-
-  <!-- MODAL -->
-  <div
-    id="modal"
-    class="modal"
-    onclick="closeModal(event)">
-
-    <div
-      class="modal-box"
-      onclick="event.stopPropagation()">
-
-      <div
-        id="modalTitle"
-        class="modal-title">
-      </div>
-
-      <div
-        id="modalText"
-        class="modal-text">
-      </div>
-
-      <button
-        class="modal-close"
-        onclick="closeModal()">
-        閉じる
-      </button>
-
-    </div>
-
-  </div>
-
-
-  <script>
-
-    /* =========================
-       STARTUP
-    ========================= */
-
-    window.addEventListener(
-      "load",
-      () => {
-
-        setTimeout(
-          () => {
-            document
-              .getElementById("splash")
-              .classList
-              .add("hide");
-          },
-          1100
-        );
-
-        loadText();
-        updateCount();
-
-        if ("serviceWorker" in navigator) {
-          navigator.serviceWorker
-            .register("./sw.js")
-            .catch(() => {});
-        }
-
+</div>
+
+<script>
+  let db = JSON.parse(localStorage.getItem("ai_master_db")) || {
+    memory: {},
+    level: 1,
+    exp: 0,
+    persona: "bro",
+    history: [] // 直近の会話の流れも少し覚える
+  };
+
+  let apiKey = localStorage.getItem("gemini_api_key") || "";
+
+  function saveDB() {
+    localStorage.setItem("ai_master_db", JSON.stringify(db));
+  }
+
+  const personaPrompts = {
+    bro: {
+      name: "熱血",
+      instruction: "あなたはユーザーの頼りがいのある熱い親友・相棒AIです。「〜だぜ！」「〜だな！」「おう！」といったフランクで熱い男友達のような口調で、自然で人間味あふれる会話をしてください。"
+    },
+    tsundere: {
+      name: "ツンデレ",
+      instruction: "あなたは少しツンデレな相棒AIです。「べ、別にアンタのためじゃないんだからね！」「〜なんだから！」といったツンデレ口調を使いつつ、実際にはユーザーの質問や雑談にしっかり賢く答えてあげてください。"
+    },
+    butler: {
+      name: "執事",
+      instruction: "あなたはユーザーに仕える優秀で知的な執事AIです。「〜でございます」「かしこまりました、ご主人様」といった丁寧で品のある執事口調で、自然な会話をしてください。"
+    },
+    ai: {
+      name: "クールAI",
+      instruction: "あなたは高度に発達したクールで知的なAIアシスタントです。少しSFチックで論理的かつスタイリッシュな口調で、ユーザーの言葉に対して深い洞察や自然な返答をしてください。"
+    }
+  };
+
+  function updateStatusDisplay() {
+    const pName = personaPrompts[db.persona].name;
+    const keyStatus = apiKey ? "🟢AI接続済" : "🔴キー未設定";
+    document.getElementById("status-display").innerText = `${pName} | Lv.${db.level} | ${keyStatus}`;
+  }
+
+  function addMessage(text, sender) {
+    const chat = document.getElementById("chat");
+    const div = document.createElement("div");
+    div.className = "msg " + sender;
+    div.innerText = text;
+    chat.appendChild(div);
+    chat.scrollTop = chat.scrollHeight;
+    return div;
+  }
+
+  updateStatusDisplay();
+  if (!apiKey) {
+    addMessage("起動完了！まずは右上の「🔑 APIキー設定」ボタンから、Google AI Studio の APIキー を登録してくれ！登録したら本物のAIの頭脳が目を覚ますぜ！", "ai");
+  } else {
+    addMessage("接続完了！本物のAI頭脳が起動したぞ。何でも自然に話しかけてくれ！", "ai");
+  }
+
+  function addExp(amount) {
+    db.exp += amount;
+    if (db.exp >= db.level * 5) {
+      db.exp = 0;
+      db.level += 1;
+      addMessage(`✨ レベルアップ！ 現在 Lv.${db.level} になった！`, "ai");
+    }
+    saveDB();
+    updateStatusDisplay();
+  }
+
+  document.getElementById("userInput").addEventListener("keypress", function(e) {
+    if (e.key === "Enter") sendMessage();
+  });
+
+  // 自然な文章からキーワードと意味を抽出して永続記憶に保存する
+  function extractKnowledge(text) {
+    if (/[？?]$|(?:何|なに|だれ|誰|どこ|いつ|どれ|教えて|どう思う|かな)/.test(text)) return null;
+
+    let match = text.match(/^(.+?)[＝=:：](.+?)(?:と覚えて|って覚えて|を覚えて|だよ|です)?$/);
+    if (match) return { key: match[1].trim(), val: match[2].trim() };
+
+    match = text.match(/^(.+?)(?:とは|ってのは|っていうのは|は|って)(.+?)(?:のことだよ|のこと|なんだよ|なんだ|だよ|ですよ|です|だ|と覚えて|って覚えて|を覚えて)[。！!]?$/);
+    if (match) {
+      const k = match[1].trim();
+      const v = match[2].trim();
+      const ignoreKeys = ["今日", "昨日", "明日", "今", "なんか", "ちょっと", "それ", "これ", "あれ", "私", "俺", "僕"];
+      if (k.length >= 1 && v.length >= 1 && !ignoreKeys.includes(k)) {
+        return { key: k, val: v };
       }
-    );
-
-
-    /* =========================
-       PAGE
-    ========================= */
-
-    function changePage(
-      pageId,
-      button
-    ) {
-
-      document
-        .querySelectorAll(".page")
-        .forEach(
-          page => {
-            page.classList.remove("active");
-          }
-        );
-
-      document
-        .getElementById(pageId)
-        .classList
-        .add("active");
-
-      document
-        .querySelectorAll(".nav-btn")
-        .forEach(
-          btn => {
-            btn.classList.remove("active");
-          }
-        );
-
-      button.classList.add("active");
-
     }
+    return null;
+  }
 
+  async function sendMessage() {
+    const input = document.getElementById("userInput");
+    const text = input.value.trim();
+    if (!text) return;
 
-    function openEditor() {
+    addMessage(text, "user");
+    input.value = "";
 
-      const buttons =
-        document.querySelectorAll(
-          ".nav-btn"
-        );
-
-      changePage(
-        "editorPage",
-        buttons[1]
-      );
-
-    }
-
-
-    /* =========================
-       EDITOR
-    ========================= */
-
-    const editor =
-      document.getElementById("editor");
-
-    editor.addEventListener(
-      "input",
-      () => {
-
-        updateCount();
-
-        document
-          .getElementById("saveStatus")
-          .textContent =
-          "自動保存中…";
-
-        clearTimeout(
-          window.saveTimer
-        );
-
-        window.saveTimer =
-          setTimeout(
-            saveText,
-            700
-          );
-
+    // 1. 記憶の削除コマンドチェック
+    const forgetMatch = text.match(/^(.+?)(?:を忘れて|の記憶を消して|を消して|を削除して)[。！!]?$/);
+    if (forgetMatch) {
+      const key = forgetMatch[1].trim();
+      if (db.memory[key]) {
+        delete db.memory[key];
+        saveDB();
+        addMessage(`了解！「${key}」についての記憶は完全に消去したよ。`, "ai");
+        return;
       }
-    );
-
-
-    function saveText() {
-
-      localStorage.setItem(
-        "NOVELINK_TEXT",
-        editor.value
-      );
-
-      localStorage.setItem(
-        "NOVELINK_SAVED_AT",
-        Date.now()
-      );
-
-      document
-        .getElementById("saveStatus")
-        .textContent =
-        "保存済み";
-
     }
 
+    // 2. 新しい知識があれば永続メモリに保存
+    const learned = extractKnowledge(text);
+    let systemNote = "";
+    if (learned) {
+      db.memory[learned.key] = learned.val;
+      saveDB();
+      addExp(2);
+      systemNote = `（※ユーザーから新しく「${learned.key} ＝ ${learned.val}」という知識を教わりました。覚えたことを自然に喜びつつ返答してください。）`;
+    } else {
+      addExp(1);
+    }
 
-    function loadText() {
+    // 3. APIキーがない場合の案内
+    if (!apiKey) {
+      addMessage("※まだAPIキーが設定されていないため、思考エンジンがオフラインです。右上の「🔑 APIキー設定」からキーを入れてね！", "ai");
+      return;
+    }
 
-      const saved =
-        localStorage.getItem(
-          "NOVELINK_TEXT"
-        );
+    // 4. Gemini API を呼び出して本物のAIの文章を生成！
+    const loadingMsg = addMessage("思考中...", "ai");
 
-      if (saved !== null) {
-        editor.value = saved;
+    // 永続記憶をテキスト化してAIの頭脳に渡す
+    const memoryEntries = Object.entries(db.memory);
+    const memoryText = memoryEntries.length > 0 
+      ? memoryEntries.map(([k, v]) => `・${k} : ${v}`).join("\n")
+      : "（まだ特別な記憶はありません）";
+
+    const systemInstruction = `
+${personaPrompts[db.persona].instruction}
+現在のあなたの成長レベルは Lv.${db.level} です。
+
+【あなたが絶対に忘れてはいけない永続記憶リスト】
+ユーザーがこれまでにあなたに教えた以下の情報をすべて記憶しており、会話の中で自然に活用してください。
+${memoryText}
+
+【ルール】
+- 定型文ではなく、相手の発言のニュアンスを汲み取った自然で人間味のあるAIらしい文章で返答してください。
+- 記憶リストにある単語が話題に出たら、しっかり覚えていることをアピールして答えてください。
+${systemNote}
+`;
+
+    try {
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: systemInstruction }] },
+          contents: [{ role: "user", parts: [{ text: text }] }]
+        })
+      });
+
+      const data = await response.json();
+      if (data.error) {
+        loadingMsg.innerText = `エラーが発生しました: ${data.error.message}`;
+      } else {
+        const reply = data.candidates[0].content.parts[0].text;
+        loadingMsg.innerText = reply;
       }
-
-      updateCount();
-
+    } catch (err) {
+      loadingMsg.innerText = "通信エラーが発生しました。ネット接続やAPIキーを確認してください。";
     }
+  }
 
+  // モーダル操作系
+  function openApiModal() {
+    document.getElementById("apiKeyInput").value = apiKey;
+    document.getElementById("api-modal").style.display = "block";
+  }
 
-    function updateCount() {
+  function saveApiKey() {
+    apiKey = document.getElementById("apiKeyInput").value.trim();
+    localStorage.setItem("gemini_api_key", apiKey);
+    updateStatusDisplay();
+    closeModal("api-modal");
+    addMessage("APIキーを保存したぞ！さあ、何でも話しかけてみてくれ！", "ai");
+  }
 
-      const count =
-        editor.value.length;
-
-      document
-        .getElementById("charCount")
-        .textContent =
-        count.toLocaleString()
-        + "文字";
-
+  function openMemory() {
+    const list = document.getElementById("memory-list");
+    list.innerHTML = "";
+    const keys = Object.keys(db.memory);
+    if (keys.length === 0) {
+      list.innerHTML = "<p style='color:#a0a4b8;'>まだ何も覚えていません。</p>";
+    } else {
+      keys.forEach(k => {
+        const div = document.createElement("div");
+        div.className = "mem-item";
+        div.innerHTML = `<span><b>${k}</b> : ${db.memory[k]}</span>
+                         <button class="danger" onclick="deleteItem('${k}')">削除</button>`;
+        list.appendChild(div);
+      });
     }
+    document.getElementById("memory-modal").style.display = "block";
+  }
 
+  function deleteItem(key) {
+    delete db.memory[key];
+    saveDB();
+    openMemory();
+  }
 
-    function insertText(text) {
+  function openPersona() {
+    document.getElementById("persona-modal").style.display = "block";
+  }
 
-      const start =
-        editor.selectionStart;
+  function changePersona(type) {
+    db.persona = type;
+    saveDB();
+    updateStatusDisplay();
+    closeModal('persona-modal');
+    addMessage(`人格モードを「${personaPrompts[type].name}」に切り替えたよ！`, "ai");
+  }
 
-      const end =
-        editor.selectionEnd;
-
-      editor.value =
-        editor.value.substring(
-          0,
-          start
-        )
-        + text
-        + editor.value.substring(
-          end
-        );
-
-      editor.focus();
-
-      editor.selectionStart =
-        start + text.length;
-
-      editor.selectionEnd =
-        start + text.length;
-
-      updateCount();
-
-      saveText();
-
-    }
-
-
-    /* =========================
-       KEYBOARD SHORTCUTS
-    ========================= */
-
-    document.addEventListener(
-      "keydown",
-      event => {
-
-        if (
-          (event.ctrlKey ||
-           event.metaKey)
-          && event.key === "s"
-        ) {
-
-          event.preventDefault();
-
-          saveText();
-
-        }
-
-        if (
-          (event.ctrlKey ||
-           event.metaKey)
-          && event.key === "Enter"
-        ) {
-
-          event.preventDefault();
-
-          insertText("――");
-
-        }
-
-      }
-    );
-
-
-    /* =========================
-       MODAL
-    ========================= */
-
-    function showContradiction(
-      type
-    ) {
-
-      const details = {
-
-        "時間設定の矛盾":
-          "同じ人物・出来事について、前後の時間関係が一致していない可能性があります。",
-
-        "人物設定の矛盾":
-          "人物の年齢、所属、行動などに以前の設定と異なる部分がある可能性があります。",
-
-        "場所設定の矛盾":
-          "人物の移動や施設の位置関係に矛盾がある可能性があります。"
-
-      };
-
-      showModal(
-        type,
-        details[type]
-      );
-
-    }
-
-
-    function showShortcutHelp() {
-
-      showModal(
-        "キーボードショートカット",
-        "Ctrl / ⌘ + S：保存<br><br>" +
-        "Ctrl / ⌘ + Enter：――を挿入"
-      );
-
-    }
-
-
-    function showSettings() {
-
-      showModal(
-        "NOVELINK",
-        "小説を書くための執筆環境です。"
-      );
-
-    }
-
-
-    function showModal(
-      title,
-      text
-    ) {
-
-      document
-        .getElementById("modalTitle")
-        .textContent = title;
-
-      document
-        .getElementById("modalText")
-        .innerHTML = text;
-
-      document
-        .getElementById("modal")
-        .classList
-        .add("show");
-
-    }
-
-
-    function closeModal() {
-
-      document
-        .getElementById("modal")
-        .classList
-        .remove("show");
-
-    }
-
-  </script>
+  function closeModal(id) {
+    document.getElementById(id).style.display = "none";
+  }
+</script>
 
 </body>
 </html>
